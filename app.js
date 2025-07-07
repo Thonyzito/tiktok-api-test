@@ -36,10 +36,12 @@ document.getElementById("uploadBtn").onclick = async () => {
     })
   });
   const tokenData = await tokenResp.json();
-  if(!tokenData.access_token) {
-    alert("Error obteniendo token: " + JSON.stringify(tokenData));
+  if (!tokenData.access_token) {
+    localStorage.removeItem('tiktok_auth_code');
+    alert("⚠️ Token expirado o inválido. Inicia sesión nuevamente.\n\n" + JSON.stringify(tokenData, null, 2));
     return;
   }
+
 
   const access_token = tokenData.access_token;
   const fileInput = document.getElementById("videoFile");
