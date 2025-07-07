@@ -2,7 +2,13 @@ const CLIENT_KEY = "sbaw2js9fngycsb2iz";
 const CLIENT_SECRET = "LWEcZEW8HfnaBJpDW6agDrNLKbpNHqrR";
 const REDIRECT_URI = "https://thonyzito.github.io/tiktok-api-test/callback.html";
 const SCOPES = "user.info.basic,video.publish,video.upload";
-const STATE = "login123"; // Mejor generar dinámico para producción
+const STATE = "login123";
+
+function setStatus(msg, color = "black") {
+  const statusEl = document.getElementById("statusMsg");
+  statusEl.textContent = msg;
+  statusEl.style.color = color;
+}
 
 document.getElementById("loginBtn").onclick = () => {
   const params = new URLSearchParams({
@@ -18,15 +24,13 @@ document.getElementById("loginBtn").onclick = () => {
 
 document.getElementById("uploadBtn").onclick = async () => {
   const code = localStorage.getItem('tiktok_auth_code');
-  if(!code) {
-    alert("Inicia sesión primero");
-    return;
-  }
+  if (!code) return setStatus("⚠️ Inicia sesión primero", "red");
 
-  // Obtener access_token
+  setStatus("🔐 Obteniendo token...");
+
   const tokenResp = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
     method: "POST",
-    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       client_key: CLIENT_KEY,
       client_secret: CLIENT_SECRET,
@@ -35,24 +39,19 @@ document.getElementById("uploadBtn").onclick = async () => {
       redirect_uri: REDIRECT_URI,
     })
   });
+
   const tokenData = await tokenResp.json();
   if (!tokenData.access_token) {
-    localStorage.removeItem('tiktok_auth_code');
-    alert("⚠️ Token expirado o inválido. Inicia sesión nuevamente.\n\n" + JSON.stringify(tokenData, null, 2));
-    return;
+    return setStatus("❌ Error obteniendo token: " + JSON.stringify(tokenData), "red");
   }
-
 
   const access_token = tokenData.access_token;
   const fileInput = document.getElementById("videoFile");
-  if(fileInput.files.length === 0) {
-    alert("Selecciona un video");
-    return;
-  }
+  if (fileInput.files.length === 0) return setStatus("⚠️ Selecciona un video", "orange");
 
   const file = fileInput.files[0];
+  setStatus("🚀 Inicializando subida...");
 
-  // Inicializar upload
   const initResp = await fetch("https://open.tiktokapis.com/v2/post/publish/inbox/video/init/", {
     method: "POST",
     headers: {
@@ -68,34 +67,31 @@ document.getElementById("uploadBtn").onclick = async () => {
       }
     })
   });
+
   const initData = await initResp.json();
-  if(initResp.status !== 200 || initData.error.code !== "ok") {
-    alert("Error init upload: " + JSON.stringify(initData));
-    return;
+  if (initResp.status !== 200 || initData.error.code !== "ok") {
+    return setStatus("❌ Error en init: " + JSON.stringify(initData), "red");
   }
 
   const { upload_url, publish_id } = initData.data;
+  setStatus("📤 Subiendo video...");
 
-  // Subir video con PUT
   const putResp = await fetch(upload_url, {
     method: "PUT",
     headers: {
-      "Content-Range": `bytes 0-${file.size-1}/${file.size}`,
+      "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
       "Content-Type": "video/mp4"
     },
     body: file
   });
 
   if (![200, 201].includes(putResp.status)) {
-    alert("Error uploading video");
-    return;
+    return setStatus("❌ Error subiendo video: " + putResp.status, "red");
   }
 
-  document.getElementById("result").innerText = `Video subido! publish_id: ${publish_id}`;
-  document.getElementById("uploadSection").style.display = "none";
+  setStatus(`✅ Video subido con éxito. publish_id: ${publish_id}`, "green");
 };
 
-// Mostrar uploadSection solo si ya hay código guardado
-if(localStorage.getItem('tiktok_auth_code')) {
+if (localStorage.getItem('tiktok_auth_code')) {
   document.getElementById("uploadSection").style.display = "block";
 }
