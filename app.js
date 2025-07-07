@@ -1,6 +1,6 @@
-const CLIENT_KEY = "tu_client_key";
-const CLIENT_SECRET = "tu_client_secret";
-const REDIRECT_URI = "https://tuusuario.github.io/tiktokapitest/callback.html";
+const CLIENT_KEY = "sbaw2js9fngycsb2iz";
+const CLIENT_SECRET = "LWEcZEW8HfnaBJpDW6agDrNLKbpNHqrR";
+const REDIRECT_URI = "https://tuusuario.github.io/tiktok-api-test/callback.html";
 const SCOPES = "user.info.basic,video.publish,video.upload";
 const STATE = "login123"; // Mejor generar dinámico para producción
 
