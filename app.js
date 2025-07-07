@@ -1,6 +1,6 @@
 const CLIENT_KEY = "sbaw2js9fngycsb2iz";
 const CLIENT_SECRET = "LWEcZEW8HfnaBJpDW6agDrNLKbpNHqrR";
-const REDIRECT_URI = "https://thonyzito.github.io/tiktok-api-test/callback.html";
+const REDIRECT_URI = "https://tiktok-api-test-vb3g.onrender.com";
 const SCOPES = "user.info.basic,video.publish,video.upload";
 const STATE = "login123";
 
