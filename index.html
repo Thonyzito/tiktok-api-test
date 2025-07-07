@@ -1,36 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<title>TikTok Upload</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TikTok API Test</title>
 </head>
 <body>
-<h2>Login con TikTok</h2>
-<a href="/oauth/login">Iniciar sesión</a>
+  <h1>TikTok API Test</h1>
 
-<h2>Subir video</h2>
-<input type="file" id="videoFile" accept="video/mp4"/>
-<button onclick="upload()">Subir</button>
+  <button id="loginBtn">Iniciar sesión con TikTok</button>
 
-<div id="status"></div>
+  <div id="uploadSection" style="display:none; margin-top: 20px;">
+    <input type="file" id="videoFile" accept="video/mp4" />
+    <button id="uploadBtn">Subir video</button>
+    <pre id="result"></pre>
+  </div>
 
-<script>
-async function upload() {
-    const fileInput = document.getElementById("videoFile");
-    if(fileInput.files.length === 0) {
-        alert("Selecciona un video");
-        return;
-    }
-    const file = fileInput.files[0];
-    const formData = new FormData();
-    formData.append("video", file);
-
-    const res = await fetch("/upload-video", {
-        method: "POST",
-        body: formData,
-    });
-    const json = await res.json();
-    document.getElementById("status").innerText = JSON.stringify(json, null, 2);
-}
-</script>
+  <script src="app.js"></script>
 </body>
 </html>
