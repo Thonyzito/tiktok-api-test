@@ -1,16 +1,25 @@
 <!DOCTYPE html>
-<html>
-  <head><title>TikTok OAuth Callback</title></head>
-  <body>
-    <h2>Authorization Code:</h2>
-    <script>
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get("code");
-      if(code) {
-        document.body.innerHTML += `<p><strong>${code}</strong></p>`;
-      } else {
-        document.body.innerHTML += "<p>No se recibió código de autorización</p>";
-      }
-    </script>
-  </body>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>TikTok OAuth Callback</title>
+</head>
+<body>
+<h1>Procesando autorización...</h1>
+<script src="app.js"></script>
+<script>
+  // Extrae code y state de URL y guarda en localStorage
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const state = params.get('state');
+
+  if(code) {
+    localStorage.setItem('tiktok_auth_code', code);
+    localStorage.setItem('tiktok_auth_state', state);
+    window.close(); // cierra la ventana popup
+  } else {
+    document.body.innerText = "Error: No se recibió código";
+  }
+</script>
+</body>
 </html>
