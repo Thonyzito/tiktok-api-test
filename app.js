@@ -37,32 +37,39 @@ document.getElementById("uploadBtn").onclick = async () => {
 
   setStatus("🚀 Inicializando subida...");
 
-  const initResp = await fetch("https://tiktok-api-test-vb3g.onrender.com/api/video/init", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-      "Content-Type": "application/json",
+  const initResp = await fetch("https://open.tiktokapis.com/v2/post/publish/inbox/video/init/", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${access_token}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    source_info: {
+      source: "FILE_UPLOAD",
+      video_size: file.size,
+      chunk_size: file.size,
+      total_chunk_count: 1,
     },
-    body: JSON.stringify({ video_size: file.size }),
-  });
+  }),
+});
 
-  const initData = await initResp.json();
-  if (initResp.status !== 200 || initData.error?.code !== "ok") {
-    return setStatus("❌ Error init: " + JSON.stringify(initData), "red");
-  }
+const initData = await initResp.json();
+if (initResp.status !== 200 || initData.error?.code !== "ok") {
+  return setStatus("❌ Error init: " + JSON.stringify(initData), "red");
+}
 
-  const { upload_url, publish_id } = initData.data;
-  setStatus("📤 Subiendo video...");
+const { upload_url, publish_id } = initData.data;
+setStatus("📤 Subiendo video...");
 
-  const putResp = await fetch("https://tiktok-api-test-vb3g.onrender.com/api/video/upload", {
-    method: "PUT",
-    headers: {
-      "upload-url": upload_url,
-      "content-range": `bytes 0-${file.size - 1}/${file.size}`,
-      "Content-Type": "video/mp4",
-    },
-    body: file,
-  });
+const putResp = await fetch(upload_url, {
+  method: "PUT",
+  headers: {
+    "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
+    "Content-Type": "video/mp4",
+  },
+  body: file,
+});
+
 
   if (![200, 201].includes(putResp.status)) {
     return setStatus("❌ Error subiendo video: " + putResp.status, "red");
