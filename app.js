@@ -4,6 +4,15 @@ const REDIRECT_URI = "https://tiktok-api-test-vb3g.onrender.com";
 const SCOPES = "user.info.basic,video.publish,video.upload";
 const STATE = "login123";
 
+// Si viene token en la URL, guardarlo
+const urlParams = new URLSearchParams(window.location.search);
+const tokenFromUrl = urlParams.get("token");
+if (tokenFromUrl) {
+  localStorage.setItem("tiktok_access_token", tokenFromUrl);
+  window.history.replaceState({}, document.title, "/tiktok-api-test/"); // limpia la URL
+}
+
+
 function setStatus(msg, color = "black") {
   const statusEl = document.getElementById("statusMsg");
   statusEl.textContent = msg;
@@ -23,7 +32,7 @@ document.getElementById("loginBtn").onclick = () => {
 };
 
 document.getElementById("uploadBtn").onclick = async () => {
-  const code = localStorage.getItem('tiktok_auth_code');
+  const access_token = localStorage.getItem('tiktok_access_token');
   if (!code) return setStatus("⚠️ Inicia sesión primero", "red");
 
   setStatus("🔐 Obteniendo token...");
