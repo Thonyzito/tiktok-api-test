@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
   <head><title>TikTok OAuth Callback</title></head>
   <body>
@@ -6,9 +7,10 @@
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get("code");
       if(code) {
-        document.body.innerHTML += <p><strong>${code}</strong></p>;
+        document.body.innerHTML += `<p><strong>${code}</strong></p>`;
       } else {
         document.body.innerHTML += "<p>No se recibió código de autorización</p>";
       }
     </script>
   </body>
+</html>
