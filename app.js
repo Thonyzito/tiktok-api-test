@@ -1,7 +1,6 @@
 const CLIENT_KEY = "sbaw2js9fngycsb2iz";
 const REDIRECT_URI = "https://tiktok-api-test-vb3g.onrender.com/callback";
 const SCOPES = "user.info.basic,video.publish,video.upload";
-const STATE = "login123";
 
 function setStatus(msg, color = "black") {
   const statusEl = document.getElementById("statusMsg");
@@ -9,7 +8,6 @@ function setStatus(msg, color = "black") {
   statusEl.style.color = color;
 }
 
-// Captura token si viene en URL y guarda en localStorage
 const urlParams = new URLSearchParams(window.location.search);
 const tokenFromUrl = urlParams.get("token");
 if (tokenFromUrl) {
@@ -23,7 +21,7 @@ document.getElementById("loginBtn").onclick = () => {
     response_type: "code",
     scope: SCOPES,
     redirect_uri: REDIRECT_URI,
-    state: STATE,
+    state: "login123",
   });
   const url = `https://www.tiktok.com/v2/auth/authorize/?${params.toString()}`;
   window.open(url, "tiktok_login", "width=600,height=600");
@@ -39,7 +37,6 @@ document.getElementById("uploadBtn").onclick = async () => {
 
   setStatus("🚀 Inicializando subida...");
 
-  // Llama backend para init upload
   const initResp = await fetch("https://tiktok-api-test-vb3g.onrender.com/api/video/init", {
     method: "POST",
     headers: {
@@ -57,7 +54,6 @@ document.getElementById("uploadBtn").onclick = async () => {
   const { upload_url, publish_id } = initData.data;
   setStatus("📤 Subiendo video...");
 
-  // Sube el video chunk via backend
   const putResp = await fetch("https://tiktok-api-test-vb3g.onrender.com/api/video/upload", {
     method: "PUT",
     headers: {
