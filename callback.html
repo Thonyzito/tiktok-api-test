@@ -1,31 +1,34 @@
+<!DOCTYPE html>
 <html>
-  <head><title>TikTok OAuth Callback</title></head>
-  <body>
-    <h2>Authorization Code:</h2>
-    <script>
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get("code");
-      if (code) {
-        document.body.innerHTML += `<p><strong>${code}</strong></p>`;
-    
-        // Enviar automáticamente al backend (Render, por ejemplo)
-        fetch("https://tiktok-api-test-vb3g.onrender.com/api/save-code", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ code })
-        })
-        .then(res => res.text())
-        .then(data => {
-          document.body.innerHTML += `<p>✅ Enviado al backend</p>`;
-        })
-        .catch(err => {
-          document.body.innerHTML += `<p style="color:red">❌ Error enviando al backend</p>`;
-        });
-      } else {
-        document.body.innerHTML += "<p>No se recibió código de autorización</p>";
-      }
-    </script>
+<head>
+  <title>TikTok OAuth Callback</title>
+</head>
+<body>
+  <h2>Procesando autorización...</h2>
+  <p id="status">Espere un momento...</p>
 
-  </body>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+
+    if (code) {
+      fetch("https://tiktok-api-test-vb3g.onrender.com/exchange_token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ code: code })
+      })
+      .then(res => res.text())
+      .then(msg => {
+        document.getElementById("status").textContent = "✅ " + msg;
+      })
+      .catch(err => {
+        document.getElementById("status").textContent = "❌ Error enviando code al servidor";
+      });
+    } else {
+      document.getElementById("status").textContent = "❌ No se recibió código de autorización";
+    }
+  </script>
+</body>
+</html>
