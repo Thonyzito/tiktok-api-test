@@ -1,11 +1,11 @@
 const express = require("express");
 const fetch = require("node-fetch");
 const cors = require("cors");
+const app = express();
+
 app.use(cors({
   origin: "https://thonyzito.github.io"  // o "*" para pruebas, pero mejor restringir
 }));
-
-const app = express();
 
 app.use(express.json());
 app.use(express.raw({ type: "video/mp4", limit: "100mb" }));
