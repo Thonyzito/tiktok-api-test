@@ -1,5 +1,10 @@
 const express = require("express");
 const fetch = require("node-fetch");
+const cors = require("cors");
+app.use(cors({
+  origin: "https://thonyzito.github.io"  // o "*" para pruebas, pero mejor restringir
+}));
+
 const app = express();
 
 app.use(express.json());
