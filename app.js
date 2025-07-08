@@ -1,17 +1,16 @@
 const CLIENT_KEY = "sbaw2js9fngycsb2iz";
-const CLIENT_SECRET = "LWEcZEW8HfnaBJpDW6agDrNLKbpNHqrR";
 const REDIRECT_URI = "https://tiktok-api-test-vb3g.onrender.com";
 const SCOPES = "user.info.basic,video.publish,video.upload";
 const STATE = "login123";
 
-// Si viene token en la URL, guardarlo
+// Guardar token si viene en la URL
 const urlParams = new URLSearchParams(window.location.search);
 const tokenFromUrl = urlParams.get("token");
 if (tokenFromUrl) {
   localStorage.setItem("tiktok_access_token", tokenFromUrl);
-  window.history.replaceState({}, document.title, "/tiktok-api-test/"); // limpia la URL
+  window.history.replaceState({}, document.title, "/tiktok-api-test/");
+  document.getElementById("uploadSection").style.display = "block";
 }
-
 
 function setStatus(msg, color = "black") {
   const statusEl = document.getElementById("statusMsg");
@@ -28,33 +27,14 @@ document.getElementById("loginBtn").onclick = () => {
     state: STATE
   });
   const url = `https://www.tiktok.com/v2/auth/authorize/?${params.toString()}`;
-  window.open(url, "tiktok_login", "width=600,height=600");
+  // Redirigir en lugar de abrir ventana para evitar problemas
+  window.location.href = url;
 };
 
 document.getElementById("uploadBtn").onclick = async () => {
-  const access_token = localStorage.getItem('tiktok_access_token');
-  if (!code) return setStatus("⚠️ Inicia sesión primero", "red");
+  const access_token = localStorage.getItem("tiktok_access_token");
+  if (!access_token) return setStatus("⚠️ Inicia sesión primero", "red");
 
-  setStatus("🔐 Obteniendo token...");
-
-  const tokenResp = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      client_key: CLIENT_KEY,
-      client_secret: CLIENT_SECRET,
-      code: code,
-      grant_type: "authorization_code",
-      redirect_uri: REDIRECT_URI,
-    })
-  });
-
-  const tokenData = await tokenResp.json();
-  if (!tokenData.access_token) {
-    return setStatus("❌ Error obteniendo token: " + JSON.stringify(tokenData), "red");
-  }
-
-  const access_token = tokenData.access_token;
   const fileInput = document.getElementById("videoFile");
   if (fileInput.files.length === 0) return setStatus("⚠️ Selecciona un video", "orange");
 
@@ -101,6 +81,7 @@ document.getElementById("uploadBtn").onclick = async () => {
   setStatus(`✅ Video subido con éxito. publish_id: ${publish_id}`, "green");
 };
 
-if (localStorage.getItem('tiktok_auth_code')) {
+// Mostrar uploadSection si ya hay token guardado
+if (localStorage.getItem("tiktok_access_token")) {
   document.getElementById("uploadSection").style.display = "block";
 }
